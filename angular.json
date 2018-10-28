@@ -133,6 +133,9 @@
           "options": {
             "tsConfig": "projects/ngx-liquid-cache/tsconfig.lib.json",
             "project": "projects/ngx-liquid-cache/ng-package.json"
+          },
+          "configurations": {
+            "production": {}
           }
         },
         "test": {
