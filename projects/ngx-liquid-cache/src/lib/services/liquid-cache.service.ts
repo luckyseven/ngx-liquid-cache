@@ -1,9 +1,9 @@
-import {Inject, Injectable} from '@angular/core';
-import {isObservable, of} from 'rxjs';
-import {map} from 'rxjs/operators';
-import {Md5} from 'ts-md5/dist/md5';
-import {LiquidCacheConfigService} from '../ngx-liquid-cache.module';
-import {LiquidCacheObject, LiquidCacheObjectType} from '../models/liquid-cache-object';
+import { Inject, Injectable } from '@angular/core';
+import { isObservable, of } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { Md5 } from 'ts-md5/dist/md5';
+import { LiquidCacheConfigService } from './private';
+import { LiquidCacheObject, LiquidCacheObjectType } from '../models/liquid-cache-object';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +12,9 @@ export class LiquidCacheService {
 
     cachedElements = {};
 
-    constructor(@Inject(LiquidCacheConfigService) public config) {
+    constructor(@Inject(LiquidCacheConfigService) public config) {}
+
+    loadDecorator() {
         DecoratorLiquidCacheService.cacheService = this;
     }
 
