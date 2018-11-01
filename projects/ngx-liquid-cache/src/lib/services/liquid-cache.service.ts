@@ -1,18 +1,20 @@
-import { Inject, Injectable } from '@angular/core';
-import {isObservable, Observable, of} from 'rxjs';
+import {Inject, Injectable} from '@angular/core';
+import {isObservable, of} from 'rxjs';
 import {map, share} from 'rxjs/operators';
-import { Md5 } from 'ts-md5/dist/md5';
-import { LiquidCacheConfigService } from './private';
-import { LiquidCacheObject, LiquidCacheObjectType } from '../models/liquid-cache-object';
+import {Md5} from 'ts-md5/dist/md5';
+import {LiquidCacheConfigService} from './private';
+import {LiquidCacheObject, LiquidCacheObjectType} from '../models/liquid-cache-object';
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root'
 })
 export class LiquidCacheService {
 
     cachedElements = {};
 
-    constructor(@Inject(LiquidCacheConfigService) public config) {}
+    constructor(
+        @Inject(LiquidCacheConfigService) public config
+    ) {}
 
     loadDecorator() {
         DecoratorLiquidCacheService.cacheService = this;
@@ -76,57 +78,53 @@ class DecoratorLiquidCacheService {
 
 
 export function LiquidCache(key: string, config = {}) {
-  const getParametersArray = f => f.toString ().replace (/[\r\n\s]+/g, ' ').
-    match (/(?:function\s*\w*)?\s*(?:\((.*?)\)|([^\s]+))/).
-    slice (1, 3).
-    join ('').
-    split (/\s*,\s*/);
+    const getParametersArray = f => f.toString().replace(/[\r\n\s]+/g, ' ').match(/(?:function\s*\w*)?\s*(?:\((.*?)\)|([^\s]+))/).slice(1, 3).join('').split(/\s*,\s*/);
 
-  return function(target, fkey, descriptor) {
-      if (descriptor === undefined) {
-          descriptor = Object.getOwnPropertyDescriptor(target, fkey);
-      }
-      const originalMethod = descriptor.value;
+    return function (target, fkey, descriptor) {
+        if (descriptor === undefined) {
+            descriptor = Object.getOwnPropertyDescriptor(target, fkey);
+        }
+        const originalMethod = descriptor.value;
 
-      descriptor.value = function () {
-          const args = Object.assign([], arguments);
+        descriptor.value = function () {
+            const args = Object.assign([], arguments);
 
-          let parsedKey;
+            let parsedKey;
 
-          if (config['cacheByParameters']) {
-              parsedKey = JSON.parse(JSON.stringify(key) + Md5.hashStr(args.join()));
-          } else {
-              const functionParameters = getParametersArray(originalMethod);
-              parsedKey = DecoratorLiquidCacheService.parseKey(key, functionParameters, args);
-          }
+            if (config['cacheByParameters']) {
+                parsedKey = JSON.parse(JSON.stringify(key) + Md5.hashStr(args.join()));
+            } else {
+                const functionParameters = getParametersArray(originalMethod);
+                parsedKey = DecoratorLiquidCacheService.parseKey(key, functionParameters, args);
+            }
 
-          if (DecoratorLiquidCacheService.cacheService.has(parsedKey)) {
-              const cacheObject = DecoratorLiquidCacheService.cacheService.get(parsedKey);
-              if (DecoratorLiquidCacheService.cacheService.is(parsedKey, LiquidCacheObjectType.Observable) && !isObservable(cacheObject)) {
-                  return of (cacheObject);
-              }
-              return cacheObject;
-          }
+            if (DecoratorLiquidCacheService.cacheService.has(parsedKey)) {
+                const cacheObject = DecoratorLiquidCacheService.cacheService.get(parsedKey);
+                if (DecoratorLiquidCacheService.cacheService.is(parsedKey, LiquidCacheObjectType.Observable) && !isObservable(cacheObject)) {
+                    return of(cacheObject);
+                }
+                return cacheObject;
+            }
 
-          const result = originalMethod.apply(this, args);
+            const result = originalMethod.apply(this, args);
 
-          if (isObservable(result)) {
-              const cachedObservble = result.pipe(
-                  map(results => {
-                          DecoratorLiquidCacheService.cacheService.set(parsedKey, results);
-                          return results;
-                      }
-                  ),
-                  share()
-              );
-              DecoratorLiquidCacheService.cacheService.set(parsedKey, cachedObservble);
-              return cachedObservble;
-          } else {
-              DecoratorLiquidCacheService.cacheService.set(parsedKey, result, LiquidCacheObjectType.Static);
-              return result;
-          }
+            if (isObservable(result)) {
+                const cachedObservble = result.pipe(
+                    map(results => {
+                            DecoratorLiquidCacheService.cacheService.set(parsedKey, results);
+                            return results;
+                        }
+                    ),
+                    share()
+                );
+                DecoratorLiquidCacheService.cacheService.set(parsedKey, cachedObservble);
+                return cachedObservble;
+            } else {
+                DecoratorLiquidCacheService.cacheService.set(parsedKey, result, LiquidCacheObjectType.Static);
+                return result;
+            }
 
-      };
-      return descriptor;
-  };
+        };
+        return descriptor;
+    };
 }

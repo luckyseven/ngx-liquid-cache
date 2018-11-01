@@ -14,7 +14,7 @@ export class LiquidCacheObject {
         this.type = type;
     }
 
-    is (type: LiquidCacheObjectType) {
+    is(type: LiquidCacheObjectType) {
         return this.type === type;
     }
 }
