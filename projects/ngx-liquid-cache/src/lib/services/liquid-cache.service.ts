@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@angular/core';
-import { isObservable, of } from 'rxjs';
-import { map } from 'rxjs/operators';
+import {isObservable, Observable, of} from 'rxjs';
+import {map, share} from 'rxjs/operators';
 import { Md5 } from 'ts-md5/dist/md5';
 import { LiquidCacheConfigService } from './private';
 import { LiquidCacheObject, LiquidCacheObjectType } from '../models/liquid-cache-object';
@@ -28,6 +28,14 @@ export class LiquidCacheService {
             return cacheObject.value;
         }
         return null;
+    }
+
+    remove(key: string) {
+        delete this.cachedElements[key];
+    }
+
+    clear() {
+        this.cachedElements = {};
     }
 
     has(key: string) {
@@ -94,7 +102,7 @@ export function LiquidCache(key: string, config = {}) {
 
           if (DecoratorLiquidCacheService.cacheService.has(parsedKey)) {
               const cacheObject = DecoratorLiquidCacheService.cacheService.get(parsedKey);
-              if (DecoratorLiquidCacheService.cacheService.is(parsedKey, LiquidCacheObjectType.Observable)) {
+              if (DecoratorLiquidCacheService.cacheService.is(parsedKey, LiquidCacheObjectType.Observable) && !isObservable(cacheObject)) {
                   return of (cacheObject);
               }
               return cacheObject;
@@ -103,13 +111,16 @@ export function LiquidCache(key: string, config = {}) {
           const result = originalMethod.apply(this, args);
 
           if (isObservable(result)) {
-              return result.pipe(
+              const cachedObservble = result.pipe(
                   map(results => {
                           DecoratorLiquidCacheService.cacheService.set(parsedKey, results);
                           return results;
                       }
-                  )
+                  ),
+                  share()
               );
+              DecoratorLiquidCacheService.cacheService.set(parsedKey, cachedObservble);
+              return cachedObservble;
           } else {
               DecoratorLiquidCacheService.cacheService.set(parsedKey, result, LiquidCacheObjectType.Static);
               return result;
