@@ -28,10 +28,12 @@ import { NgxLiquidCacheModule } from 'ngx-liquid-cache';
 export class AppModule { }
 
 ```
-2. Use the `@LiquidCache` decorator in any method that return a result. Don't worry about the type of the returned value or about adaptations to your code: LiquidCache is perfectly integrable with every existing method withouth change anything.
+2. Use the `@LiquidCache` decorator in any method that return a result. Don't worry about the type of the returned value or about making adaptations to your code: LiquidCache is perfectly integrable with every existing method withouth change anything.
 
 ```typescript
-// HttpClient Example
+import { LiquidCache } from 'ngx-liquid-cache';
+
+// Observable Example
 export class ApiService {
 
   constructor(
@@ -96,6 +98,8 @@ export class ExampleComponent {
 4. You can also use `LiquidCacheService` to interact directly with your cache:
 
 ```typescript
+import { LiquidCacheService } from 'ngx-liquid-cache';
+
 // Manual Example
 export class ExampleComponent {
 
@@ -118,13 +122,20 @@ export class ExampleComponent {
 
 The configuration for LiquidCache is divided in three parts: Global, Decorator and Object.
 
+Here's the full configuration parameters list:
+
+Parameter			| Type				| Default		| Description
+---						| ---					| ---				| ---
+`duration`		| *number*		| `null`		| The duration for cached elements (in seconds). A trigger will remove expired objects from the cache system.
+
+
 ### Global configuration
 
 You can pass a `LiquidCacheConfig` object to the `NgxLiquidCacheModule.forRoot()` method to specify the global configuration for your cache system.
 
 ```typescript
 //...
-import { NgxLiquidCacheModule } from 'ngx-liquid-cache';
+import { NgxLiquidCacheModule, LiquidCacheConfig } from 'ngx-liquid-cache';
 
 const liquidCacheConfig: LiquidCacheConfig = {
   //...
@@ -142,12 +153,6 @@ export class AppModule { }
 
 ```
 
-Here's the full configuration parameters list:
-
-Parameter			| Type				| Default		| Description
----						| ---					| ---				| ---
-`duration`		| *number*		| `null`		| The duration for cached elements (in seconds). A trigger will remove expired objects from the cache system.
-
 ### Decorator configuration
 
 The `@LiquidCache` decorator accepts two arguments: `key` (`string`, required) and `configuration` (`LiquidCacheConfig`, optional).
@@ -155,13 +160,10 @@ The `@LiquidCache` decorator accepts two arguments: `key` (`string`, required) a
 1. The `key` argument could be static (ex. `'myKey'`) or "dynamic", using special placeholders (`{placeholder name}`) that will collect data from the original method arguments (ex. `mySingleKey{id}`):
 
 ```typescript
-// HttpClient Example
 export class ApiService {
-
-  constructor(
-      private http: HttpClient,
-  ) { }
-
+  
+  //...
+  
   // Supposing to invoke getSingleUser(1), the result 
   // will be stored in the cache system with key 'user1'
   @LiquidCache('user{id}')
@@ -174,7 +176,6 @@ export class ApiService {
 2. The `configuration` argument accepts a `LiquidCacheConfig` object, so you can pass a specific configuration for this single decorator:
 
 ```typescript
-// HttpClient Example
 export class ApiService {
   
   // Uses a specific configuration
@@ -192,7 +193,8 @@ export class ApiService {
 You can set a specific configuration for every cache key that you will create:
 
 ```typescript
-// HttpClient Example
+import { LiquidCacheService, LiquidCacheConfig } from 'ngx-liquid-cache';
+
 export class TestComponent {
 
   constructor(
