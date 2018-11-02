@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {FakeApiService} from './services/fake-api.service';
-import {LiquidCacheService} from 'ngx-liquid-cache';
+import {LiquidCacheService,LiquidCacheConfig} from 'ngx-liquid-cache';
 
 @Component({
     selector: 'nlcd-root',
