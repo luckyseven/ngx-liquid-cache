@@ -20,7 +20,7 @@ npm install ngx-liquid-cache
 
 ## Fast Setup (zero configuration)
 
-1. Import `NgxLiquidCacheModule` in `app.module.ts`:
+1 - Import `NgxLiquidCacheModule` in `app.module.ts`:
 
 ```typescript
 //...
@@ -37,7 +37,7 @@ import { NgxLiquidCacheModule } from 'ngx-liquid-cache';
 export class AppModule { }
 
 ```
-2. Use the `@LiquidCache` decorator in any method that return a result. Don't worry about the type of the returned value or about making adaptations to your code: LiquidCache is perfectly integrable with every existing method withouth change anything.
+2 - Use the `@LiquidCache` decorator in any method that return a result. Don't worry about the type of the returned value or about making adaptations to your code: LiquidCache is perfectly integrable with every existing method withouth change anything.
 
 ```typescript
 import { LiquidCache } from 'ngx-liquid-cache';
@@ -71,7 +71,7 @@ export class UtilsService {
 }
 ```
 
-3. Call your methods and see the magic: original methods will be executed only the first time you invoke them. After the first call you will receive the cached result, speeding up your application. 
+3 - Call your methods and see the magic: original methods will be executed only the first time you invoke them. After the first call you will receive the cached result, speeding up your application. 
 
 ```typescript
 // Automatic Example (cache by decorators)
@@ -104,7 +104,7 @@ export class ExampleComponent {
 }
 ```
 
-4. You can also use `LiquidCacheService` to interact directly with your cache:
+4 - You can also use `LiquidCacheService` to interact directly with your cache:
 
 ```typescript
 import { LiquidCacheService } from 'ngx-liquid-cache';
@@ -166,7 +166,7 @@ export class AppModule { }
 
 The `@LiquidCache` decorator accepts two arguments: `key` (`string`, required) and `configuration` (`LiquidCacheConfig`, optional).
 
-1. The `key` argument could be static (ex. `'myKey'`) or "dynamic", using special placeholders (`{placeholder name}`) that will collect data from the original method arguments (ex. `mySingleKey{id}`):
+1 - The `key` argument could be static (ex. `'myKey'`) or "dynamic", using special placeholders (`{placeholder name}`) that will collect data from the original method arguments (ex. `mySingleKey{id}`):
 
 ```typescript
 export class ApiService {
@@ -182,7 +182,7 @@ export class ApiService {
 }
 ```
 
-2. The `configuration` argument accepts a `LiquidCacheConfig` object, so you can pass a specific configuration for this single decorator:
+2 - The `configuration` argument accepts a `LiquidCacheConfig` object, so you can pass a specific configuration for this single decorator:
 
 ```typescript
 export class ApiService {
