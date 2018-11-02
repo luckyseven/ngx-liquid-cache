@@ -1,0 +1,22 @@
+{
+  "name": "ngx-liquid-cache",
+  "version": "1.0.0",
+  "keywords": ["cache", "angular", "ngx"],
+  "author": {
+    "name" : "Alberto Fecchi",
+    "email" : "alberto.fecchi@gmail.com",
+    "url" : "https://github.com/luckyseven"
+  },
+  "homepage": "https://github.com/luckyseven/ngx-liquid-cache",
+  "bugs": {
+    "url" : "https://github.com/owner/project/issues/issues",
+    "email" : "alberto.fecchi@gmail.com"
+  },
+  "license": "MIT",
+  "peerDependencies": {
+    "@angular/common": "^6.0.0-rc.0 || ^6.0.0",
+    "@angular/core": "^6.0.0-rc.0 || ^6.0.0",
+    "rxjs": "~6.2.0",
+    "ts-md5": "^1.2.4"
+  }
+}
