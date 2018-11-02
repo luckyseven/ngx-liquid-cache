@@ -1,6 +1,6 @@
 import { InjectionToken } from '@angular/core';
 import { LiquidCacheService } from './liquid-cache.service';
-import { LiquidCacheConfig } from '../ngx-liquid-cache.module';
+import {LiquidCacheConfig} from '../configuration';
 
 export const LiquidCacheConfigService = new InjectionToken<LiquidCacheConfig>('LiquidCacheConfigService');
 

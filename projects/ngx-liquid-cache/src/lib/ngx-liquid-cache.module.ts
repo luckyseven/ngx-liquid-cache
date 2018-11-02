@@ -1,20 +1,11 @@
 import {APP_INITIALIZER, InjectionToken, ModuleWithProviders, NgModule} from '@angular/core';
 import {LiquidCacheService} from './services/liquid-cache.service';
 import {LiquidCacheServiceFactory, LiquidCacheConfigService} from './services/private';
-
-export enum LiquidCacheTypes {
-    inMemory = 'inMemory'
-    // localStorage  = 'localStorage'
-}
-
-export interface LiquidCacheConfig {
-    expiration: Number;
-    type: LiquidCacheTypes;
-}
+import {LiquidCacheConfig} from './configuration';
 
 @NgModule()
 export class NgxLiquidCacheModule {
-    static forRoot(config: LiquidCacheConfig): ModuleWithProviders {
+    static forRoot(config: LiquidCacheConfig = {}): ModuleWithProviders {
         return {
             ngModule: NgxLiquidCacheModule,
             providers: [

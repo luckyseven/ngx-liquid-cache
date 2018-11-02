@@ -3,11 +3,10 @@ import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
 
-import { LiquidCacheConfig, LiquidCacheTypes, NgxLiquidCacheModule} from 'ngx-liquid-cache';
+import { NgxLiquidCacheModule, LiquidCacheConfig } from 'ngx-liquid-cache';
 
-const cacheConfig: LiquidCacheConfig = {
-    expiration: 10,
-    type: LiquidCacheTypes.inMemory
+const liquidCacheConfig: LiquidCacheConfig = {
+  duration: 5
 };
 
 @NgModule({
@@ -16,7 +15,7 @@ const cacheConfig: LiquidCacheConfig = {
   ],
   imports: [
     BrowserModule,
-    NgxLiquidCacheModule.forRoot(cacheConfig)
+    NgxLiquidCacheModule.forRoot(liquidCacheConfig)
   ],
   providers: [],
   bootstrap: [AppComponent]

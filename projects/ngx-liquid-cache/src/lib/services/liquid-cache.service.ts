@@ -1,9 +1,9 @@
 import {Inject, Injectable} from '@angular/core';
 import {isObservable, of} from 'rxjs';
 import {map, share} from 'rxjs/operators';
-import {Md5} from 'ts-md5/dist/md5';
 import {LiquidCacheConfigService} from './private';
-import {LiquidCacheObject, LiquidCacheObjectType} from '../models/liquid-cache-object';
+import {LiquidCacheObject} from '../models/liquid-cache-object';
+import {LiquidCacheConfig, LiquidCacheObjectTypes, LiquidCacheStorageTypes} from '../configuration';
 
 @Injectable({
     providedIn: 'root'
@@ -11,20 +11,32 @@ import {LiquidCacheObject, LiquidCacheObjectType} from '../models/liquid-cache-o
 export class LiquidCacheService {
 
     cachedElements = {};
+    defaultObjectParameters: LiquidCacheConfig =  {
+        duration: null,
+        objectType: LiquidCacheObjectTypes.Observable,
+        storageType: LiquidCacheStorageTypes.inMemory
+    };
 
     constructor(
-        @Inject(LiquidCacheConfigService) public config
-    ) {}
+        @Inject(LiquidCacheConfigService) configuration
+    ) {
+        this.defaultObjectParameters = {...this.defaultObjectParameters, ...configuration};
+    }
 
     loadDecorator() {
         DecoratorLiquidCacheService.cacheService = this;
     }
 
-    set(key: string, value: any, type: LiquidCacheObjectType = LiquidCacheObjectType.Observable) {
-        this.cachedElements[key] = new LiquidCacheObject(key, value, type);
+    set(key: string, value: any, configuration: LiquidCacheConfig) {
+        const objectConfiguration = {...JSON.parse(JSON.stringify(this.defaultObjectParameters)), ...configuration};
+        if (this.has(key)) {
+            this.getCacheObject(key).update(value, objectConfiguration);
+        } else {
+            this.cachedElements[key] = new LiquidCacheObject(key, value, objectConfiguration, this);
+        }
     }
 
-    get(key: string) {
+    get(key: string): any {
         if (this.has(key)) {
             const cacheObject = <LiquidCacheObject> this.cachedElements[key];
             return cacheObject.value;
@@ -32,21 +44,28 @@ export class LiquidCacheService {
         return null;
     }
 
-    remove(key: string) {
-        delete this.cachedElements[key];
+    getCacheObject(key: string): LiquidCacheObject {
+        return this.cachedElements[key];
     }
 
-    clear() {
-        this.cachedElements = {};
+    remove(key: string): void {
+        const cacheObject = this.getCacheObject(key);
+        if (cacheObject) {
+            cacheObject.remove();
+        }
     }
 
-    has(key: string) {
+    clear(): void {
+        Object.keys(this.cachedElements).forEach(key => this.remove(key));
+    }
+
+    has(key: string): boolean {
         return this.cachedElements[key] !== undefined;
     }
 
-    is(key: string, type: LiquidCacheObjectType = LiquidCacheObjectType.Observable) {
+    is(key: string, type: LiquidCacheObjectTypes = LiquidCacheObjectTypes.Observable): boolean {
         if (this.has(key)) {
-            const cacheObject = <LiquidCacheObject> this.cachedElements[key];
+            const cacheObject = <LiquidCacheObject> this.getCacheObject(key);
             return cacheObject.is(type);
         }
         return false;
@@ -77,7 +96,7 @@ class DecoratorLiquidCacheService {
 }
 
 
-export function LiquidCache(key: string, config = {}) {
+export function LiquidCache(key: string, configuration: LiquidCacheConfig = {}) {
     const getParametersArray = f => f.toString().replace(/[\r\n\s]+/g, ' ').match(/(?:function\s*\w*)?\s*(?:\((.*?)\)|([^\s]+))/).slice(1, 3).join('').split(/\s*,\s*/);
 
     return function (target, fkey, descriptor) {
@@ -91,16 +110,12 @@ export function LiquidCache(key: string, config = {}) {
 
             let parsedKey;
 
-            if (config['cacheByParameters']) {
-                parsedKey = JSON.parse(JSON.stringify(key) + Md5.hashStr(args.join()));
-            } else {
-                const functionParameters = getParametersArray(originalMethod);
-                parsedKey = DecoratorLiquidCacheService.parseKey(key, functionParameters, args);
-            }
+            const functionParameters = getParametersArray(originalMethod);
+            parsedKey = DecoratorLiquidCacheService.parseKey(key, functionParameters, args);
 
             if (DecoratorLiquidCacheService.cacheService.has(parsedKey)) {
                 const cacheObject = DecoratorLiquidCacheService.cacheService.get(parsedKey);
-                if (DecoratorLiquidCacheService.cacheService.is(parsedKey, LiquidCacheObjectType.Observable) && !isObservable(cacheObject)) {
+                if (DecoratorLiquidCacheService.cacheService.is(parsedKey, LiquidCacheObjectTypes.Observable) && !isObservable(cacheObject)) {
                     return of(cacheObject);
                 }
                 return cacheObject;
@@ -111,16 +126,17 @@ export function LiquidCache(key: string, config = {}) {
             if (isObservable(result)) {
                 const cachedObservble = result.pipe(
                     map(results => {
-                            DecoratorLiquidCacheService.cacheService.set(parsedKey, results);
+                            DecoratorLiquidCacheService.cacheService.set(parsedKey, results, configuration);
                             return results;
                         }
                     ),
                     share()
                 );
-                DecoratorLiquidCacheService.cacheService.set(parsedKey, cachedObservble);
+                DecoratorLiquidCacheService.cacheService.set(parsedKey, cachedObservble, configuration);
                 return cachedObservble;
             } else {
-                DecoratorLiquidCacheService.cacheService.set(parsedKey, result, LiquidCacheObjectType.Static);
+                configuration.objectType = LiquidCacheObjectTypes.Static;
+                DecoratorLiquidCacheService.cacheService.set(parsedKey, result, configuration);
                 return result;
             }
 
