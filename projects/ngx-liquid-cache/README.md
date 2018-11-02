@@ -2,6 +2,15 @@
 
 > LiquidCache: a powerful, automatic and optimized Angular2/6+ cache system that fits everywhere!
 
+## Main features
+
+1. Works **everywhere**, guaranteed. It's decorator system let you cache every existing (or new) method in your project without change a single comma.
+2. Optimized under every aspect: observables will be cached before the result to be automatically shared between observers (with `share` operator from `rxjs`) and then converted to store the real result. Not-observable responses will be cached instantly;
+3. An *active* cache expiration check system ensure that your methods return fresh data after a specific time frame.
+4. High possibility of configuration, from global settings to single-cache object.
+5. Decorators and main service: you can use one or both of them together to have max control over your cache system.
+6. The library loads before the application thanks to Angular's `APP_INITIALIZER` injection token, ensuring that cache service is already operative at the application's startup.
+
 ## Getting started
 
 Install the library in your Angular project:
@@ -208,30 +217,28 @@ export class TestComponent {
 }
 ```
 
-
 ## Example
 
-Open `example/index.html` in your browser to see jQuery MultiSelector Plugin in action or click [here](http://htmlpreview.github.io/?https://github.com/luckyseven/jquery-multiselector/blob/master/example/index.html).
+Clone the demo project from [GitHub](https://github.com/luckyseven/ngx-liquid-cache) and run it with `ng serve`. Check the browser console to see the demo in action.
 
+## Coming soon
+
+1. Use **localStorage** for advanced (and durable) caching.
+2. Specify *group name* for decorators that uses placeholders to simplify the removal of them.
+3. Use custom callbacks and hooks during the cache lifecycle.
+
+## Suggestions, improvements, issues and more
 
 **Have you used this plugin in your project?**
 
 Say hello with a [tweet](https://twitter.com/luckysevenrox)!
 
-## Alternatives
+**Need support?**
 
-**Need a non-jquery version?**
-
-I'm already working on it, but feel free to contact me and ask for improvement!
-
-
-## History
-
-Check [Releases](https://github.com/luckyseven/jquery-multiselector/releases) for detailed changelog.
-
+Feel free to contact me at [alberto.fecchi@gmail.com](alberto.fecchi@gmail.com) or just open an issue on the official repository on [GitHub](https://github.com/luckyseven/ngx-liquid-cache).
 
 ## License
 
-> MIT License - Copyright (c) 2017 Alberto Fecchi
+> MIT License - Copyright (c) Alberto Fecchi
 
 Full license [here](LICENSE)
