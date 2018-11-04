@@ -27,7 +27,7 @@ export class LiquidCacheService {
         DecoratorLiquidCacheService.cacheService = this;
     }
 
-    set(key: string, value: any, configuration: LiquidCacheConfig) {
+    set(key: string, value: any, configuration: LiquidCacheConfig = {}) {
         const objectConfiguration = {...JSON.parse(JSON.stringify(this.defaultObjectParameters)), ...configuration};
         if (this.has(key)) {
             this.getCacheObject(key).update(value, objectConfiguration);
