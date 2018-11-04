@@ -1,16 +1,16 @@
 import {Injectable} from '@angular/core';
 import {of} from 'rxjs';
 import {delay} from 'rxjs/operators';
-import {LiquidCache} from 'ngx-liquid-cache';
+import {LiquidCache, LiquidCacheStorageTypes} from 'ngx-liquid-cache';
 
 @Injectable({
     providedIn: 'root'
 })
 export class FakeApiService {
 
-    @LiquidCache('all')
+    @LiquidCache('all', { storageType: LiquidCacheStorageTypes.localStorage })
     findAll() {
-        console.log('Fake network call - findAll');
+        console.log('Fake network call - findAll (saved to localStorage)');
         const lastCall = new Date();
         return of([
             {id: 1, lc: lastCall},
