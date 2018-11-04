@@ -6,7 +6,7 @@ import { AppComponent } from './app.component';
 import { NgxLiquidCacheModule, LiquidCacheConfig } from 'ngx-liquid-cache';
 
 const liquidCacheConfig: LiquidCacheConfig = {
-  duration: 5
+  duration: 60
 };
 
 @NgModule({
