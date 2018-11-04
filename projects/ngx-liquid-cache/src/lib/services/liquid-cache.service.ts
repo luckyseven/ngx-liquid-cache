@@ -1,7 +1,7 @@
 import {Inject, Injectable} from '@angular/core';
 import {isObservable, of} from 'rxjs';
 import {map, share} from 'rxjs/operators';
-import {LiquidCacheConfigService} from './private';
+import {LiquidCacheConfigService, LiquidCacheObjectSnapshot} from './private';
 import {LiquidCacheObject} from '../models/liquid-cache-object';
 import {LiquidCacheConfig, LiquidCacheObjectTypes, LiquidCacheStorageTypes} from '../configuration';
 
@@ -10,8 +10,9 @@ import {LiquidCacheConfig, LiquidCacheObjectTypes, LiquidCacheStorageTypes} from
 })
 export class LiquidCacheService {
 
+    localStoragePrefix = 'ngxlc-';
     cachedElements = {};
-    defaultObjectParameters: LiquidCacheConfig =  {
+    defaultObjectParameters: LiquidCacheConfig = {
         duration: null,
         objectType: LiquidCacheObjectTypes.Observable,
         storageType: LiquidCacheStorageTypes.inMemory
@@ -21,6 +22,7 @@ export class LiquidCacheService {
         @Inject(LiquidCacheConfigService) configuration
     ) {
         this.defaultObjectParameters = {...this.defaultObjectParameters, ...configuration};
+        this.loadFromLocalStorage();
     }
 
     loadDecorator() {
@@ -29,10 +31,21 @@ export class LiquidCacheService {
 
     set(key: string, value: any, configuration: LiquidCacheConfig = {}) {
         const objectConfiguration = {...JSON.parse(JSON.stringify(this.defaultObjectParameters)), ...configuration};
+
         if (this.has(key)) {
             this.getCacheObject(key).update(value, objectConfiguration);
         } else {
             this.cachedElements[key] = new LiquidCacheObject(key, value, objectConfiguration, this);
+        }
+        if (objectConfiguration.storageType === LiquidCacheStorageTypes.localStorage) {
+            try {
+                if (!isObservable(value)) {
+                    localStorage.setItem(`${this.localStoragePrefix}${key}`, JSON.stringify(this.getCacheObject(key).snapshot()));
+                }
+            } catch (e) {
+                console.error('LiquidCacheError', e);
+                // TODO: manage errors if localStorage doesn't exist
+            }
         }
     }
 
@@ -69,6 +82,25 @@ export class LiquidCacheService {
             return cacheObject.is(type);
         }
         return false;
+    }
+
+    private loadFromLocalStorage() {
+        try {
+            Object.keys(localStorage)
+                .filter(key => key.startsWith(this.localStoragePrefix))
+                .forEach(key => {
+                    const snapshot: LiquidCacheObjectSnapshot = JSON.parse(localStorage.getItem(key));
+                    this.createCacheObjectFromSnapshot(snapshot);
+                });
+        } catch (e) {
+            console.error('LiquidCacheError', e);
+            // TODO: manage errors if localStorage doesn't exist
+        }
+    }
+
+    private createCacheObjectFromSnapshot(snapshot: LiquidCacheObjectSnapshot): void {
+        this.cachedElements[snapshot.key] = new LiquidCacheObject(snapshot.key, snapshot.value, snapshot.configuration, this);
+        this.getCacheObject(snapshot.key).expirationCheck(snapshot.expiresAt);
     }
 }
 
@@ -139,7 +171,6 @@ export function LiquidCache(key: string, configuration: LiquidCacheConfig = {}) 
                 DecoratorLiquidCacheService.cacheService.set(parsedKey, result, configuration);
                 return result;
             }
-
         };
         return descriptor;
     };

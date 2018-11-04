@@ -4,8 +4,8 @@ export enum LiquidCacheObjectTypes {
 }
 
 export enum LiquidCacheStorageTypes {
-    inMemory = 'inMemory'
-    // localStorage  = 'localStorage'
+    inMemory = 'inMemory',
+    localStorage  = 'localStorage'
 }
 
 export interface LiquidCacheConfig {
