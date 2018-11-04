@@ -5,11 +5,12 @@
 ## Main features
 
 1. Works **everywhere**, guaranteed. It's decorator system let you cache every existing (or new) method in your project without change a single comma.
-2. Optimized under every aspect: observables will be cached before the result to be automatically shared between observers (with `share` operator from `rxjs`) and then converted to store the real result. Not-observable responses will be cached instantly;
-3. An *active* cache expiration check system ensure that your methods return fresh data after a specific time frame.
-4. High possibility of configuration, from global settings to single-cache object.
-5. Decorators and main service: you can use one or both of them together to have max control over your cache system.
-6. The library loads before the application thanks to Angular's `APP_INITIALIZER` injection token, ensuring that cache service is already operative at the application's startup.
+2. **Persistent** or *in-memory* cache: choose the best solution in every case.
+3. Optimized under every aspect: observables will be cached before the result to be automatically shared between observers (with `share` operator from `rxjs`) and then converted to store the real result. Not-observable responses will be cached instantly;
+4. An *active* cache expiration check system ensure that your methods return fresh data after a specific time frame, also for persistent data.
+5. High possibility of configuration, from global settings to single-cache object.
+6. Decorators and main service: you can use one or both of them together to have max control over your cache system.
+7. The library loads before the application thanks to Angular's `APP_INITIALIZER` injection token, ensuring that cache service is already operative at the application's startup.
 
 ## Getting started
 
@@ -135,7 +136,8 @@ Here's the full configuration parameters list:
 
 Parameter			| Type				| Default		| Description
 ---						| ---					| ---				| ---
-`duration`		| *number*		| `null`		| The duration for cached elements (in seconds). A trigger will remove expired objects from the cache system.
+`duration`		| `number`	| `null`		| The duration for cached elements (in seconds). A trigger will remove expired objects from the cache system.
+`storageType`		| `LiquidCacheStorageTypes`		| `LiquidCacheStorageTypes.inMemory`		| Choose the storage type between `LiquidCacheStorageTypes.inMemory` and `LiquidCacheStorageTypes.localStorage`.
 
 
 ### Global configuration
@@ -223,9 +225,8 @@ Clone the demo project from [GitHub](https://github.com/luckyseven/ngx-liquid-ca
 
 ## Coming soon
 
-1. Use **localStorage** for advanced (and durable) caching.
-2. Specify *group name* for decorators that uses placeholders to simplify the removal of them.
-3. Use custom callbacks and hooks during the cache lifecycle.
+1. Specify *group name* for decorators that uses placeholders to simplify the removal of them.
+2. Use custom callbacks and hooks during the cache lifecycle.
 
 ## Suggestions, improvements, issues and more
 
