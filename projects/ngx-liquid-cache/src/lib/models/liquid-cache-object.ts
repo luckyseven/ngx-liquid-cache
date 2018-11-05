@@ -66,10 +66,12 @@ export class LiquidCacheObject {
             this.expiresAt = newExpiresAt;
         }
 
-        if (this.expiresAt < currentTime) {
-            this.remove();
-        } else {
-            this.expiresIn(Math.round((this.expiresAt - currentTime) / 1000));
+        if (this.expiresAt) {
+            if (this.expiresAt < currentTime) {
+                this.remove();
+            } else {
+                this.expiresIn(Math.round((this.expiresAt - currentTime) / 1000));
+            }
         }
     }
 
