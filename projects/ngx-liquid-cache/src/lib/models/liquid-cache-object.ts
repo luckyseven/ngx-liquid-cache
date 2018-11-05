@@ -16,10 +16,7 @@ export class LiquidCacheObject {
         this.value = value;
         this.configuration = configuration;
         this.cacheService = cacheService;
-        if (configuration.duration) {
-            this.expiresAt = new Date().getTime() + (configuration.duration * 1000);
-            this.expiresIn(configuration.duration);
-        }
+        this.calculateExpirationTime();
     }
 
     is(type: LiquidCacheObjectTypes): boolean {
@@ -29,6 +26,7 @@ export class LiquidCacheObject {
     update(value: any, configuration: LiquidCacheConfig): void {
         this.value = value;
         this.configuration = configuration;
+        this.calculateExpirationTime();
     }
 
     remove(): void {
@@ -46,6 +44,13 @@ export class LiquidCacheObject {
             console.error(e);
         }
 
+    }
+
+    calculateExpirationTime() {
+        if (this.configuration.duration && this.expiresAt === null) {
+            this.expiresAt = new Date().getTime() + (this.configuration.duration * 1000);
+            this.expiresIn(this.configuration.duration);
+        }
     }
 
     expiresIn(seconds: number): void {
