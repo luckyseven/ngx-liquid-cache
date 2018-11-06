@@ -1,6 +1,6 @@
 import {Inject, Injectable} from '@angular/core';
 import {isObservable, of} from 'rxjs';
-import {map, share} from 'rxjs/operators';
+import {share, tap} from 'rxjs/operators';
 import {LiquidCacheConfigService, LiquidCacheObjectSnapshot} from './private';
 import {LiquidCacheObject} from '../models/liquid-cache-object';
 import {LiquidCacheConfig, LiquidCacheObjectTypes, LiquidCacheStorageTypes} from '../configuration';
@@ -174,11 +174,7 @@ export function LiquidCache(key: string, configuration: LiquidCacheConfig = {}) 
 
             if (isObservable(result)) {
                 const cachedObservble = result.pipe(
-                    map(results => {
-                            DecoratorLiquidCacheService.cacheService.set(parsedKey, results, configuration);
-                            return results;
-                        }
-                    ),
+                    tap(results => DecoratorLiquidCacheService.cacheService.set(parsedKey, results, configuration)),
                     share()
                 );
                 DecoratorLiquidCacheService.cacheService.set(parsedKey, cachedObservble, configuration);
