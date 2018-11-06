@@ -13,4 +13,5 @@ export interface LiquidCacheConfig {
     duration?: number;
     objectType?: LiquidCacheObjectTypes;
     storageType?: LiquidCacheStorageTypes;
+    shareBetweenTabs?: boolean;
 }

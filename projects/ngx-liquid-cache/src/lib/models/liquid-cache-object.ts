@@ -8,15 +8,14 @@ export class LiquidCacheObject {
     value: any;
     configuration: LiquidCacheConfig;
     expiresAt: number = null;
+    lastUpdate: number = null;
 
     private _timeout: any = null;
 
     constructor(key: string, value: any, configuration: LiquidCacheConfig, cacheService: LiquidCacheService) {
         this.key = key;
-        this.value = value;
-        this.configuration = configuration;
         this.cacheService = cacheService;
-        this.calculateExpirationTime();
+        this.update(value, configuration);
     }
 
     is(type: LiquidCacheObjectTypes): boolean {
@@ -26,6 +25,7 @@ export class LiquidCacheObject {
     update(value: any, configuration: LiquidCacheConfig): void {
         this.value = value;
         this.configuration = configuration;
+        this.lastUpdate = new Date().getTime();
         this.calculateExpirationTime();
     }
 
@@ -85,7 +85,8 @@ export class LiquidCacheObject {
             key: this.key,
             value: this.value,
             configuration: this.configuration,
-            expiresAt: this.expiresAt
+            expiresAt: this.expiresAt,
+            lastUpdate: this.lastUpdate
         };
     }
 
