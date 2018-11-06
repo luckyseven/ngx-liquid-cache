@@ -4,12 +4,12 @@
 
 ## Main features
 
-1. Works **everywhere**, guaranteed. It's decorator system let you cache every existing (or new) method in your project without change a single comma.
-2. **Persistent** or *in-memory* cache: choose the best solution in every case.
+1. Works **everywhere**, guaranteed. Its decorator system let you cache every existing (or new) method in your project without change a single comma.
+2. *Persistent* or *in-memory* cache: choose the best solution in every case. Persistent cache could be also **shared between tabs and windows**.
 3. Optimized under every aspect: observables will be cached before the result to be automatically shared between observers (with `share` operator from `rxjs`) and then converted to store the real result. Not-observable responses will be cached instantly;
 4. An *active* cache expiration check system ensure that your methods return fresh data after a specific time frame, also for persistent data.
-5. High possibility of configuration, from global settings to single-cache object.
-6. Decorators and main service: you can use one or both of them together to have max control over your cache system.
+5. High configurability, from global settings to single-cache object.
+6. Decorators and main service: you can use one or both of them to have max control over your cache system.
 7. The library loads before the application thanks to Angular's `APP_INITIALIZER` injection token, ensuring that cache service is already operative at the application's startup.
 
 ## Getting started
@@ -137,6 +137,8 @@ Here's the full configuration parameters list:
 Parameter			| Type				| Default		| Description
 ---						| ---					| ---				| ---
 `duration`		| `number`	| `null`		| The duration for cached elements (in seconds). A trigger will remove expired objects from the cache system.
+`localStoragePrefix`		| `string`	| `ngxlc-`		| When saved to persistent cache, your keys will be prefixed with this value to avoid conflicts with other applications. This operation is *invisible* so you don't have to worry about change keys inside your application code. 
+`shareBetweenTabs`		| `boolean`		| `true`		| When this parameter is set to `true`, updates to your cache data will be detected from your application opened in other tabs/windows. This allow multiple instances of your application to be always synchronized.
 `storageType`		| `LiquidCacheStorageTypes`		| `LiquidCacheStorageTypes.inMemory`		| Choose the storage type between `LiquidCacheStorageTypes.inMemory` and `LiquidCacheStorageTypes.localStorage`.
 
 
