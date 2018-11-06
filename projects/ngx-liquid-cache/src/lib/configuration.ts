@@ -9,6 +9,7 @@ export enum LiquidCacheStorageTypes {
 }
 
 export interface LiquidCacheConfig {
+    localStoragePrefix?: string;
     duration?: number;
     objectType?: LiquidCacheObjectTypes;
     storageType?: LiquidCacheStorageTypes;

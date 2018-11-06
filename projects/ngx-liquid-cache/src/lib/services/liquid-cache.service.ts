@@ -10,9 +10,9 @@ import {LiquidCacheConfig, LiquidCacheObjectTypes, LiquidCacheStorageTypes} from
 })
 export class LiquidCacheService {
 
-    localStoragePrefix = 'ngxlc-';
     cachedElements = {};
     defaultObjectParameters: LiquidCacheConfig = {
+        localStoragePrefix: 'ngxlc-',
         duration: null,
         objectType: LiquidCacheObjectTypes.Observable,
         storageType: LiquidCacheStorageTypes.inMemory
@@ -40,7 +40,7 @@ export class LiquidCacheService {
         if (objectConfiguration.storageType === LiquidCacheStorageTypes.localStorage) {
             try {
                 if (!isObservable(value)) {
-                    localStorage.setItem(`${this.localStoragePrefix}${key}`, JSON.stringify(this.getCacheObject(key).snapshot()));
+                    localStorage.setItem(`${this.defaultObjectParameters.localStoragePrefix}${key}`, JSON.stringify(this.getCacheObject(key).snapshot()));
                 }
             } catch (e) {
                 console.error('LiquidCacheError', e);
@@ -87,7 +87,7 @@ export class LiquidCacheService {
     private loadFromLocalStorage() {
         try {
             Object.keys(localStorage)
-                .filter(key => key.startsWith(this.localStoragePrefix))
+                .filter(key => key.startsWith(this.defaultObjectParameters.localStoragePrefix))
                 .forEach(key => {
                     const snapshot: LiquidCacheObjectSnapshot = JSON.parse(localStorage.getItem(key));
                     this.createCacheObjectFromSnapshot(snapshot);

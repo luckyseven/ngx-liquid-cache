@@ -37,8 +37,8 @@ export class LiquidCacheObject {
             delete this.cacheService.cachedElements[this.key];
         }
         try {
-            if (localStorage.getItem(this.cacheService.localStoragePrefix + this.key)) {
-                localStorage.removeItem(this.cacheService.localStoragePrefix + this.key);
+            if (localStorage.getItem(this.cacheService.defaultObjectParameters.localStoragePrefix + this.key)) {
+                localStorage.removeItem(this.cacheService.defaultObjectParameters.localStoragePrefix + this.key);
             }
         } catch (e) {
             console.error(e);
