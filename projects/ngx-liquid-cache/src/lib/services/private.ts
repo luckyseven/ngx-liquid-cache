@@ -13,4 +13,5 @@ export interface LiquidCacheObjectSnapshot {
     value: any;
     configuration: LiquidCacheConfig;
     expiresAt: number;
+    lastUpdate: number;
 }

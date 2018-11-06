@@ -1,6 +1,6 @@
 import {Inject, Injectable} from '@angular/core';
 import {isObservable, of} from 'rxjs';
-import {map, share} from 'rxjs/operators';
+import {share, tap} from 'rxjs/operators';
 import {LiquidCacheConfigService, LiquidCacheObjectSnapshot} from './private';
 import {LiquidCacheObject} from '../models/liquid-cache-object';
 import {LiquidCacheConfig, LiquidCacheObjectTypes, LiquidCacheStorageTypes} from '../configuration';
@@ -10,9 +10,10 @@ import {LiquidCacheConfig, LiquidCacheObjectTypes, LiquidCacheStorageTypes} from
 })
 export class LiquidCacheService {
 
-    localStoragePrefix = 'ngxlc-';
     cachedElements = {};
     defaultObjectParameters: LiquidCacheConfig = {
+        localStoragePrefix: 'ngxlc-',
+        shareBetweenTabs: true,
         duration: null,
         objectType: LiquidCacheObjectTypes.Observable,
         storageType: LiquidCacheStorageTypes.inMemory
@@ -31,7 +32,6 @@ export class LiquidCacheService {
 
     set(key: string, value: any, configuration: LiquidCacheConfig = {}) {
         const objectConfiguration = {...JSON.parse(JSON.stringify(this.defaultObjectParameters)), ...configuration};
-
         if (this.has(key)) {
             this.getCacheObject(key).update(value, objectConfiguration);
         } else {
@@ -40,7 +40,7 @@ export class LiquidCacheService {
         if (objectConfiguration.storageType === LiquidCacheStorageTypes.localStorage) {
             try {
                 if (!isObservable(value)) {
-                    localStorage.setItem(`${this.localStoragePrefix}${key}`, JSON.stringify(this.getCacheObject(key).snapshot()));
+                    localStorage.setItem(`${objectConfiguration.localStoragePrefix}${key}`, JSON.stringify(this.getCacheObject(key).snapshot()));
                 }
             } catch (e) {
                 console.error('LiquidCacheError', e);
@@ -73,6 +73,7 @@ export class LiquidCacheService {
     }
 
     has(key: string): boolean {
+        this.checkSharedUpdates(key);
         return this.cachedElements[key] !== undefined;
     }
 
@@ -87,7 +88,7 @@ export class LiquidCacheService {
     private loadFromLocalStorage() {
         try {
             Object.keys(localStorage)
-                .filter(key => key.startsWith(this.localStoragePrefix))
+                .filter(key => key.startsWith(this.defaultObjectParameters.localStoragePrefix))
                 .forEach(key => {
                     const snapshot: LiquidCacheObjectSnapshot = JSON.parse(localStorage.getItem(key));
                     this.createCacheObjectFromSnapshot(snapshot);
@@ -95,6 +96,22 @@ export class LiquidCacheService {
         } catch (e) {
             console.error('LiquidCacheError', e);
             // TODO: manage errors if localStorage doesn't exist
+        }
+    }
+
+    private checkSharedUpdates(key: string) {
+        const fromStorage = localStorage.getItem(this.defaultObjectParameters.localStoragePrefix + key)
+            ? <LiquidCacheObjectSnapshot> JSON.parse(localStorage.getItem(this.defaultObjectParameters.localStoragePrefix + key))
+            : null;
+
+        const fromMemory = this.cachedElements[key] !== undefined
+            ? <LiquidCacheObject> this.cachedElements[key]
+            : null;
+
+        if (fromStorage && fromStorage.configuration.shareBetweenTabs) {
+            if (!fromMemory || fromStorage.lastUpdate > fromMemory.lastUpdate) {
+                this.createCacheObjectFromSnapshot(fromStorage);
+            }
         }
     }
 
@@ -157,11 +174,7 @@ export function LiquidCache(key: string, configuration: LiquidCacheConfig = {}) 
 
             if (isObservable(result)) {
                 const cachedObservble = result.pipe(
-                    map(results => {
-                            DecoratorLiquidCacheService.cacheService.set(parsedKey, results, configuration);
-                            return results;
-                        }
-                    ),
+                    tap(results => DecoratorLiquidCacheService.cacheService.set(parsedKey, results, configuration)),
                     share()
                 );
                 DecoratorLiquidCacheService.cacheService.set(parsedKey, cachedObservble, configuration);
