@@ -38,7 +38,7 @@ import { NgxLiquidCacheModule } from 'ngx-liquid-cache';
 export class AppModule { }
 
 ```
-2 - Use the `@LiquidCache` decorator in any method that return a result. Don't worry about the type of the returned value or about making adaptations to your code: LiquidCache is perfectly integrable with every existing method withouth change anything.
+2 - Use the `@LiquidCache` decorator in any method that return a result. Don't worry about the type of the returned value or about making adaptations to your code: LiquidCache is perfectly integrable with every existing method without change anything.
 
 ```typescript
 import { LiquidCache } from 'ngx-liquid-cache';
