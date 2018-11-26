@@ -223,6 +223,10 @@ export class TestComponent {
 }
 ```
 
+## Known issues
+
+1. To use nominative placeholders with decorators (ex. `user{id}`) be sure to run the production build with `optimization`set to `false` in your `angular.json` file.
+
 ## Example
 
 Clone the demo project from [GitHub](https://github.com/luckyseven/ngx-liquid-cache) and run it with `ng serve`. Check the browser console to see the demo in action.
