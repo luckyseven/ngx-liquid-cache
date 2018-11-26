@@ -170,13 +170,15 @@ export class AppModule { }
 
 The `@LiquidCache` decorator accepts two arguments: `key` (`string`, required) and `configuration` (`LiquidCacheConfig`, optional).
 
-1 - The `key` argument could be static (ex. `'myKey'`) or "dynamic", using special placeholders (`{placeholder name}`) that will collect data from the original method arguments (ex. `mySingleKey{id}`):
+1 - The `key` argument could be static (ex. `'myKey'`) or "dynamic", using special placeholders (`{placeholder name}`) that will collect data from the original method arguments (ex. `mySingleKey{id}`).
+**IMPORTANT**: be sure to run the production build of your projects with `optimization` set to `false` or the placeholders' system will not work:
 
 ```typescript
 export class ApiService {
   
   //...
   
+  // IMPORTANT: to use placeholders be sure to set 'optimization' to 'false' during the build
   // Supposing to invoke getSingleUser(1), the result 
   // will be stored in the cache system with key 'user1'
   @LiquidCache('user{id}')
