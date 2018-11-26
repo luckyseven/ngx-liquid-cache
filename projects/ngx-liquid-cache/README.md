@@ -38,7 +38,7 @@ import { NgxLiquidCacheModule } from 'ngx-liquid-cache';
 export class AppModule { }
 
 ```
-2 - Use the `@LiquidCache` decorator in any method that return a result. Don't worry about the type of the returned value or about making adaptations to your code: LiquidCache is perfectly integrable with every existing method withouth change anything.
+2 - Use the `@LiquidCache` decorator in any method that return a result. Don't worry about the type of the returned value or about making adaptations to your code: LiquidCache is perfectly integrable with every existing method without change anything.
 
 ```typescript
 import { LiquidCache } from 'ngx-liquid-cache';
@@ -170,13 +170,15 @@ export class AppModule { }
 
 The `@LiquidCache` decorator accepts two arguments: `key` (`string`, required) and `configuration` (`LiquidCacheConfig`, optional).
 
-1 - The `key` argument could be static (ex. `'myKey'`) or "dynamic", using special placeholders (`{placeholder name}`) that will collect data from the original method arguments (ex. `mySingleKey{id}`):
+1 - The `key` argument could be static (ex. `'myKey'`) or "dynamic", using special placeholders (`{placeholder name}`) that will collect data from the original method arguments (ex. `mySingleKey{id}`).
+**IMPORTANT**: be sure to run the production build of your projects with `optimization` set to `false` or the placeholders' system will not work:
 
 ```typescript
 export class ApiService {
   
   //...
   
+  // IMPORTANT: to use placeholders be sure to set 'optimization' to 'false' during the build
   // Supposing to invoke getSingleUser(1), the result 
   // will be stored in the cache system with key 'user1'
   @LiquidCache('user{id}')
@@ -220,6 +222,10 @@ export class TestComponent {
   }
 }
 ```
+
+## Known issues
+
+1. To use nominative placeholders with decorators (ex. `user{id}`) be sure to run the production build with `optimization`set to `false` in your `angular.json` file.
 
 ## Example
 
