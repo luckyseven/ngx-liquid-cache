@@ -146,7 +146,7 @@ class DecoratorLiquidCacheService {
 
 
 export function LiquidCache(key: string, configuration: LiquidCacheConfig = {}) {
-    const getParametersArray = f => f.toString().replace(/[\r\n\s]+/g, ' ').match(/(?:function\s*\w*)?\s*(?:\((.*?)\)|([^\s]+))/).slice(1, 3).join('').split(/\s*,\s*/);
+    const getParametersArray = f => /\(\s*([^)]+?)\s*\)/.exec(f.toString())[1].split(/\s*,\s*/);
 
     return function (target, fkey, descriptor) {
         if (descriptor === undefined) {
