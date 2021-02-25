@@ -225,7 +225,7 @@ export class TestComponent {
 
 ## Known issues
 
-1. To use nominative placeholders with decorators (ex. `user{id}`) be sure to run the production build with `optimization`set to `false` in your `angular.json` file.
+1. Angular versions before 10: To use nominative placeholders with decorators (ex. `user{id}`) be sure to run the production build with `optimization`set to `false` in your `angular.json` file.
 
 ## Example
 
