@@ -16,7 +16,7 @@
 
 Install the library in your Angular project:
 ```
-npm install ngx-liquid-cache
+npm i --save ngx-liquid-cache
 ```
 
 ## Fast Setup (zero configuration)
