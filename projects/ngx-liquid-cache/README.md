@@ -1,6 +1,6 @@
 # ngx-liquid-cache
 
-> LiquidCache: a powerful, automatic and optimized Angular2/6+ cache system that fits everywhere!
+> LiquidCache: a powerful, automatic and optimized Angular2/10+ cache system that fits everywhere!
 
 ## Main features
 
